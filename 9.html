@@ -1,0 +1,146 @@
+<!Doctype HTML>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="9.css">
+        <title> Practice 10 </title>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="screen">
+                0
+            </div>
+            
+            <div class="calc_buttons">
+                <div class=calc_buttons_rows>
+                    <div class="calc_buttons_row">
+                        <button class="calc_button number"> 7 </button>
+                        <button class="calc_button number"> 8 </button>
+                        <button class="calc_button number"> 9 </button>
+                        <button class="calc_button operation"> &divide; </button>
+                    </div>
+
+                    <div class="calc_buttons_row">
+                        <button class="calc_button number"> 4 </button>
+                        <button class="calc_button number"> 5 </button>
+                        <button class="calc_button number"> 6 </button>
+                        <button class="calc_button operation"> × </button>
+                    </div>
+
+                    <div class="calc_buttons_row">
+                        <button class="calc_button number"> 1 </button>
+                        <button class="calc_button number"> 2 </button>
+                        <button class="calc_button number"> 3 </button>
+                        <button class="calc_button operation"> &#45; </button>
+                    </div>   
+
+                    <div class="calc_buttons_row">
+                        <button class="calc_button number double"> 0 </button>
+                        <button class="calc_button operation"> &#46; </button>
+                        <button class="calc_button operation"> &#43; </button>
+                    </div>       
+                </div>
+                
+                <div class="calc_buttons_columns">
+                    <div class="calc_buttons_column">
+                        <button class="calc_button operation"> C </button>
+                        <button class="calc_button operation"> &larr; </button>
+                        <button class="calc_button operation double"> &#61; </button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <script>
+            let runningTotal = 0;
+            let screenText = '0';
+            let previousOperator = null;
+            
+            const screen = document.querySelector('.screen');
+
+            document.querySelectorAll('.number').forEach(
+                number => number.addEventListener('click', event => manageNumber(event.target.innerText)));
+
+            document.querySelectorAll('.operation').forEach(
+                number => number.addEventListener('click', event => manageSymbol(event.target.innerText)));
+
+            function manageSymbol(symbol) 
+            {
+                switch(symbol)
+                    {
+                        case 'C':
+                            screenText = '0';
+                            runningTotal = 0;
+                            break;
+                        case '=':
+                            if (previousOperator === null)
+                                return;
+                            
+                            doMath(parseFloat(screenText));
+
+                            previousOperator = null;
+                            screenText = runningTotal;
+                            runningTotal = 0;
+                            break;
+                        case '←':
+                            if (screenText.length === 1)
+                                screenText = '0';
+                            else
+                                screenText = screenText.substring(0, screenText.length - 1);
+                            break;
+                        case '.':
+                            if( !screenText.includes('.'))
+                                screenText += symbol;
+                            break;
+                        case '+':
+                        case '-':
+                        case '×':
+                        case '÷':
+                            manageMath(symbol)
+                            break;
+                    }
+
+                screen.innerHTML = screenText;
+            }
+            
+            function manageMath(symbol) 
+            {
+                if (screenText === '0')
+                    return;
+                
+                const numberValue = parseFloat(screenText);
+                
+                if (runningTotal === 0)
+                    runningTotal = numberValue;
+                else
+                    doMath(numberValue);
+                
+                previousOperator = symbol;
+                screenText = symbol;
+            }
+            
+            function doMath(value)
+            {
+                if (previousOperator === '+')
+                    runningTotal += value;
+                else if (previousOperator === '-')
+                    runningTotal -= value;
+                else if (previousOperator === '×')
+                    runningTotal *= value;
+                else
+                    runningTotal /= value;
+            }
+            
+            function manageNumber(number) 
+            {
+                if (screenText === '0' || isNaN(screenText))
+                    screenText = number;
+                else
+                    screenText += number;
+
+                screen.innerHTML = screenText;
+            }
+        </script>
+    </body>
+</html> 
